@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "3333:5672"
+      - "4444:15672"
+    restart: always
+
+  redis:
+    image: redis
+    ports:
+      - "6666:6379"
+    restart: always
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: crypto_assets
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5555:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  publisher:
+    build: .
+    depends_on:
+      - rabbitmq
+    command: ["node", "workers/publisher.js"]
+
+  consumer:
+    build: .
+    depends_on:
+      - rabbitmq
+      - redis
+    command: ["node", "workers/consumer.js"]
+
+  redis-to-db:
+    build: .
+    depends_on:
+      - redis
+      - postgres
+    command: ["node", "workers/redisToDb.js"]
+
+volumes:
+  pgdata:

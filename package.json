@@ -1,0 +1,20 @@
+{
+  "name": "rabbit-redis-pipe",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start:publisher": "node workers/publisher.js",
+    "start:consumer": "node workers/consumer.js",
+    "start:redisToDb": "node workers/redisToDb.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "description": "",
+  "dependencies": {
+    "ioredis": "^5.6.1",
+    "pg": "^8.14.1",
+    "rascal": "^20.1.1"
+  }
+}
