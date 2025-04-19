@@ -5,40 +5,38 @@ import { redisConfig } from '../config/config.js';
 
 const redis = new Redis(redisConfig);
 
-// Consumes messages from the RabbitMQ's 'stock_sub' subscription and stores them in Redis
-export default async function runConsumer() {
+// Main function to run the consumer
+const runConsumer = async () => {
 
     // Create a Rascal broker
     rascal.Broker.create(rascalConfig, (err, broker) => {
 
-        // Check for errors
         if (err) throw err;
 
-        // Log errors from the broker
         broker.on('error', console.error);
 
-        // Subscribe to the 'stock_sub' subscription
+        // Subscribe to the 'stock_sub' topic
         broker.subscribe('stock_sub', (err, subscription) => {
 
-            // Check for errors
             if (err) throw err;
 
-            // Log when the subscription is ready
+            // Listen for messages on the subscription
             subscription.on('message', async (message, content, ackOrNack) => {
 
                 try {
 
+                    // Get key
                     const key = content.symbol;
 
-                    redis.rpush(key, JSON.stringify(content));
+                    // Add the message to the Redis stream
+                    await redis.xadd(key, '*', 'data', JSON.stringify(content));
 
-                    console.log('[✓] Stored in Redis:', key, content);
+                    console.log('[✓] Written to Redis Stream:', key, content);
                     ackOrNack();
-                }
 
-                catch (err) {
+                } catch (err) {
 
-                    console.error('[!] Redis error:', err);
+                    console.error('[!] Redis stream write error:', err);
                     ackOrNack(err);
                 }
             });
@@ -47,6 +45,8 @@ export default async function runConsumer() {
         });
     });
 }
+
+export default runConsumer;
 
 if (import.meta.url === `file://${process.argv[1]}`) {
     runConsumer();
