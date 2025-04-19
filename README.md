@@ -8,8 +8,8 @@ It streams price updates for various crypto assets, stores them in Redis, and sy
 ## 🚀 Features
 
 - 📤 Publisher pushes simulated crypto price updates to RabbitMQ
-- 📩 Consumer stores price updates in Redis (as a list per asset)
-- 🔁 Redis-to-DB worker pops Redis streams and updates PostgreSQL
+- 📩 Consumer stores price updates in Redis (as a list/stream per asset)
+- 🔁 Redis-to-DB worker consumes Redis streams and updates PostgreSQL
 - 🐳 Full Docker Compose support
 - 🔁 Supports local and container-based execution
 
