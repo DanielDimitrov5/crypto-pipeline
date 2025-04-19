@@ -20,7 +20,7 @@ const initGroups = async () => {
 			// The MKSTREAM option creates the stream if it doesn't exist
 			// The '0' argument indicates that we want to start reading from the beginning of the stream
 			// If the stream already exists, it will not be created again and the last delivered ID won't be reset
-			await redis.xgroup('CREATE', asset, GROUP_NAME, '0', 'MKSTREAM');
+			await redis.xgroup('CREATE', asset + '_stream', GROUP_NAME, '0', 'MKSTREAM');
 
 			console.log(`[+] Created group for ${asset}`);
 		} catch (err) {
@@ -44,6 +44,9 @@ const runRedisToDb = async () => {
 
 		try {
 
+			// Append '_stream' to each asset in the cryptoAssets array
+			const cryptoAssetStreams = cryptoAssets.map(asset => asset + '_stream');
+
 			// Read from the Redis streams in a blocking manner
 			// This will block until there are messages to read
 			// The COUNT option limits the number of messages read at once
@@ -53,8 +56,8 @@ const runRedisToDb = async () => {
 				'GROUP', GROUP_NAME, CONSUMER_NAME,
 				'BLOCK', 0,
 				'COUNT', 10,
-				'STREAMS', ...cryptoAssets,
-				...cryptoAssets.map(() => '>')
+				'STREAMS', ...cryptoAssetStreams,
+				...cryptoAssetStreams.map(() => '>')
 			);
 
 			// Check if result is null or undefined
@@ -84,7 +87,7 @@ const runRedisToDb = async () => {
 						// Acknowledge the message in the stream
 						await redis.xack(stream, GROUP_NAME, id);
 
-						console.log(`[✓] Updated ${data.symbol} in DB: $${data.price}}`);
+						console.log(`[✓] Updated ${data.symbol} in DB: $${data.price}`);
 
 					} catch (err) {
 
