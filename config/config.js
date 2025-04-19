@@ -6,7 +6,7 @@ export const redisConfig = {
 };
 
 export const rabbitConfig = {
-  url: isLocal ? 'amqp://localhost' : 'amqp://rabbitmq', // Docker: 'amqp://rabitmq' | Local: 'amqp://localhost' 
+  url: isLocal ? 'amqp://localhost:3333' : 'amqp://rabbitmq', // Docker: 'amqp://rabitmq' | Local: 'amqp://localhost' 
   queueName: 'stock_prices',
 };
 
