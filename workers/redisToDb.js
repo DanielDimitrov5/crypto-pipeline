@@ -84,7 +84,7 @@ const runRedisToDb = async () => {
 						// Acknowledge the message in the stream
 						await redis.xack(stream, GROUP_NAME, id);
 
-						console.log(`[✓] ${stream}: ${data.price} @ ${data.timestamp}`);
+						console.log(`[✓] Updated ${data.symbol} in DB: $${data.price}}`);
 
 					} catch (err) {
 
