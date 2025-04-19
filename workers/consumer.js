@@ -26,7 +26,7 @@ const runConsumer = async () => {
                 try {
 
                     // Get key
-                    const key = content.symbol;
+                    const key = content.symbol + '_stream';
 
                     // Add the message to the Redis stream
                     await redis.xadd(key, '*', 'data', JSON.stringify(content));

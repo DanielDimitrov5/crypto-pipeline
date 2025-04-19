@@ -38,7 +38,7 @@ const runPublisher = async () => {
                 else console.log('[x] Sent:', message);
             });
 
-        }, 1000); // Publish every second   
+        }, 1000); // Publish every 1 second
     });
 }
 
