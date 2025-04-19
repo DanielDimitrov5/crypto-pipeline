@@ -4,7 +4,7 @@ import { cryptoAssets } from '../config/config.js';
 
 
 // Publishes messages to the RabbitMQ's 'stock_pub' publication
-export default async function runPublisher() {
+const runPublisher = async () => {
 
     // Create a Rascal broker
     rascal.Broker.create(rascalConfig, (err, broker) => {
@@ -41,6 +41,8 @@ export default async function runPublisher() {
         }, 1000); // Publish every second   
     });
 }
+
+export default runPublisher;
 
 if (import.meta.url === `file://${process.argv[1]}`) {
     runPublisher();
