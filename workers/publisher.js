@@ -2,7 +2,6 @@ import rascal from 'rascal';
 import rascalConfig from '../config/rascalConfig.js';
 import { cryptoAssets } from '../config/config.js';
 
-
 // Publishes messages to the RabbitMQ's 'stock_pub' publication
 const runPublisher = async () => {
 

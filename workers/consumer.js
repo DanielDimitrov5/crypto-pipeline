@@ -11,32 +11,34 @@ const runConsumer = async () => {
     // Create a Rascal broker
     rascal.Broker.create(rascalConfig, (err, broker) => {
 
+        // Check for errors
         if (err) throw err;
 
+        // Log errors from the broker
         broker.on('error', console.error);
 
-        // Subscribe to the 'stock_sub' topic
+        // Subscribe to the 'stock_sub' subscription
         broker.subscribe('stock_sub', (err, subscription) => {
 
+            // Check for errors
             if (err) throw err;
 
-            // Listen for messages on the subscription
+            // Log when the subscription is ready
             subscription.on('message', async (message, content, ackOrNack) => {
 
                 try {
 
-                    // Get key
-                    const key = content.symbol;
+                    const key = content.symbol + '_list';
 
-                    // Add the message to the Redis stream
-                    await redis.xadd(key, '*', 'data', JSON.stringify(content));
+                    redis.rpush(key, JSON.stringify(content));
 
-                    console.log('[✓] Written to Redis Stream:', key, content);
+                    console.log('[✓] Stored in Redis:', key, content);
                     ackOrNack();
+                }
 
-                } catch (err) {
+                catch (err) {
 
-                    console.error('[!] Redis stream write error:', err);
+                    console.error('[!] Redis error:', err);
                     ackOrNack(err);
                 }
             });
